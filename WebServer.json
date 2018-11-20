@@ -619,31 +619,32 @@
                             }
                         },
                         "files": {
-                            "/usr/local/tomcat9.tar.gz" : {
-                                "source" : "http://mirrors.wuchna.com/apachemirror/tomcat/tomcat-9/v9.0.13/bin/apache-tomcat-9.0.13.tar.gz"
+                            "/usr/local/tomcat8.tar.gz" : {
+                                "source" : "http://mirrors.fibergrid.in/apache/tomcat/tomcat-8/v8.5.35/bin/apache-tomcat-8.5.35.tar.gz"
                             },
                             "/usr/local/ExtractTomcat.sh" : {
                                 "content": {
                                     "Fn::Join": [
                                         "", [
-                                            "cd /usr/local",
-                                            "tar -xvf tomcat9.tar.gz",
-                                            "mv apache-tomcat-9.0.13 tomcat9",
-                                            "echo \"export CATALINA_HOME=\"/usr/local/tomcat9\"\" >> ~/.bashrc",
-                                            "source ~/.bashrc"
+                                            "cd /usr/local\n",
+                                            "sudo tar -xvf tomcat8.tar.gz\n",
+                                            "sudo mv apache-tomcat-8.5.35 tomcat8\n",
+                                            "echo \"export CATALINA_HOME=\"/usr/local/tomcat8\"\" >> ~/.bashrc\n",
+                                            "source ~/.bashrc\n"
                                         ]
                                     ]
-                                }
+                                },
+                                "mode": "000755"
                             },
                             "/usr/local/StartTomcat.sh" : {
                                 "content": {
                                     "Fn::Join": [
                                         "", [
-                                            "cd /usr/local/tomcat9/bin",
-                                            "./startup.sh"
+                                            "sudo /usr/local/tomcat8/bin/startup.sh"
                                         ]
                                     ]
-                                }
+                                },
+                                "mode": "000755"
                             },
                             "/etc/cfn/cfn-hup.conf": {
                                     "content": {
