@@ -578,7 +578,7 @@
             }
         }
     },
-     "Resources": {
+    "Resources": {
         "ApplicationLoadBalancer": {
             "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
             "Properties": {
@@ -702,32 +702,54 @@
                             }
                         },
                         "files": {
-                            "/usr/local/tomcat8.tar.gz" : {
-                                "source" : "http://mirrors.fibergrid.in/apache/tomcat/tomcat-8/v8.5.35/bin/apache-tomcat-8.5.35.tar.gz"
+                            "/home/ec2-user/.aws/credentials" : {
+                                "content": {
+                                    "Fn::Join": [
+                                        "", [
+                                            "[default]\n",
+                                            "aws_access_key_id\n",
+                                            "aws_secret_access_key\n"
+                                            ]
+                                        ]
+                                },
+                                "mode": "000644"
+                            },
+                            "/usr/local/tomcat9.tar.gz" : {
+                                "source" : "http://www-us.apache.org/dist/tomcat/tomcat-9/v9.0.12/bin/apache-tomcat-9.0.12.tar.gz"
+                            },
+                            "/usr/local/setjava8.sh" : {
+                                "content": {
+                                    "Fn::Join": [
+                                        "", [
+                                            "sudo /usr/sbin/alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java\n"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000700"
                             },
                             "/usr/local/ExtractTomcat.sh" : {
                                 "content": {
                                     "Fn::Join": [
                                         "", [
                                             "cd /usr/local\n",
-                                            "sudo tar -xvf tomcat8.tar.gz\n",
-                                            "sudo mv apache-tomcat-8.5.35 tomcat8\n",
-                                            "echo \"export CATALINA_HOME=\"/usr/local/tomcat8\"\" >> ~/.bashrc\n",
+                                            "sudo tar -xvf tomcat9.tar.gz\n",
+                                            "sudo mv apache-tomcat-9.0.12 tomcat9\n",
+                                            "echo \"export CATALINA_HOME=\"/usr/local/tomcat9\"\" >> ~/.bashrc\n",
                                             "source ~/.bashrc\n"
                                         ]
                                     ]
                                 },
-                                "mode": "000755"
+                                "mode": "000700"
                             },
                             "/usr/local/StartTomcat.sh" : {
                                 "content": {
                                     "Fn::Join": [
                                         "", [
-                                            "sudo /usr/local/tomcat8/bin/startup.sh"
+                                            "sudo /usr/local/tomcat9/bin/startup.sh"
                                         ]
                                     ]
                                 },
-                                "mode": "000755"
+                                "mode": "000700"
                             },
                             "/etc/cfn/cfn-hup.conf": {
                                     "content": {
@@ -834,8 +856,9 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "/usr/local/ExtractTomcat.sh\n",
-                                "/usr/local/StartTomcat.sh\n",
+                                "/usr/local/ExtractTomcat.sh >> /var/log/userlog\n",
+                                "/usr/local/setjava8.sh >> /var/log/userlog\n",
+                                "/usr/local/StartTomcat.sh >> /var/log/userlog\n",
 								"# Signal the status from cfn-init\n",
                                 "/opt/aws/bin/cfn-signal -e $? ",
                                 "         --stack ",
@@ -974,6 +997,22 @@
                             "Fn::GetAtt": [
                                 "ApplicationLoadBalancer",
                                 "DNSName"
+                            ]
+                        }
+                    ]
+                ]
+            }
+        },
+        "DBEndpoint": {
+            "Description": "DB Endpoint URL",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        {
+                            "Fn::GetAtt": [
+                            "MySQLDatabase",
+                            "Endpoint.Address"
                             ]
                         }
                     ]
